@@ -1,0 +1,67 @@
+name: github action infra creation
+
+on:
+  # push:
+  #   branches:
+  #     - main
+  workflow_dispatch: 
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
+  STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
+  CONTAINER_NMAE: ${{ secrets.CONTAINER_NAME }}
+  STATE_FILE: ${{ secrets.STATE_FILE }}
+
+jobs:
+  Build_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Terraform Install
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "latest"
+
+      - name: Terraform init with Azure backend
+        uses: ahmedig/terraform-azurerm-backend@v4
+        with:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+          RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
+          STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
+          CONTAINER_NAME: ${{ secrets.CONTAINER_NAME }}   # corrected spelling
+          STATE_FILE: ${{ secrets.STATE_FILE }}
+          tf_working_directory: ./resource_group
+
+      - name: Terraform Validate
+        uses: tf-actions/validate@v1
+        with:
+          tf_working_directory: ./resource_group
+
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: ./resource_group
+
+      - name: Terraform Apply
+        run: terraform apply --auto-approve
+        working-directory: ./resource_group
+
+     
+            
+       
+    
+  
+  
+  
+    
