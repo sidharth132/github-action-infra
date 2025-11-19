@@ -1,10 +1,7 @@
 name: github action infra creation
 
 on:
-  # push:
-  #   branches:
-  #     - main
-  workflow_dispatch: 
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -13,7 +10,7 @@ permissions:
 env:
   RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
   STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
-  CONTAINER_NMAE: ${{ secrets.CONTAINER_NAME }}
+  CONTAINER_NAME: ${{ secrets.CONTAINER_NAME }}  # ✔ fixed spelling
   STATE_FILE: ${{ secrets.STATE_FILE }}
 
 jobs:
@@ -39,10 +36,11 @@ jobs:
         with:
           azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
           resource_group_name: ${{ secrets.RESOURCE_GROUP }}
-          container_name: ${{ secrets.CONTAINER_NAME }}
           storage_account_name: ${{ secrets.STORAGE_ACCOUNT_NAME }}
+          container_name: ${{ secrets.CONTAINER_NAME }}
           state_file: ${{ secrets.STATE_FILE }}
           tf_working_directory: ./resource_group
+
       - name: Terraform Validate
         uses: tf-actions/validate@v1
         with:
@@ -55,12 +53,3 @@ jobs:
       - name: Terraform Apply
         run: terraform apply --auto-approve
         working-directory: ./resource_group
-
-     
-            
-       
-    
-  
-  
-  
-    
