@@ -37,8 +37,8 @@ jobs:
           azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
           resource_group_name: ${{ secrets.RESOURCE_GROUP }}
           storage_account_name: ${{ secrets.STORAGE_ACCOUNT_NAME }}
-          container_name: ${{ secrets.CONTAINER_NAME }}
-          file_name:: ${{ secrets.STATE_FILE }}
+          container_name: ${{ secrets.CONTAINER_NAME }}   # must not be empty
+          file_name: ${{ secrets.STATE_FILE }}            # corrected
           tf_working_directory: ./resource_group
 
       - name: Terraform Validate
