@@ -37,13 +37,12 @@ jobs:
       - name: Terraform init with Azure backend
         uses: ahmedig/terraform-azurerm-backend@v4
         with:
-          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-          RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
-          STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
-          CONTAINER_NAME: ${{ secrets.CONTAINER_NAME }}   # corrected spelling
-          STATE_FILE: ${{ secrets.STATE_FILE }}
+          azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
+          resource_group_name: ${{ secrets.RESOURCE_GROUP }}
+          container_name: ${{ secrets.CONTAINER_NAME }}
+          storage_account_name: ${{ secrets.STORAGE_ACCOUNT_NAME }}
+          state_file: ${{ secrets.STATE_FILE }}
           tf_working_directory: ./resource_group
-
       - name: Terraform Validate
         uses: tf-actions/validate@v1
         with:
