@@ -16,8 +16,9 @@ env:
   CONTAINER_NAME: tfstate  # ✔ fixed spelling
   STATE_FILE: terraform.tfstate
 
+# Prod_deploy
 jobs:
-  Build_deploy:
+  Dev_deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -45,13 +46,95 @@ jobs:
 
 
       - name: Terraform Validate
-        run: terraform validate
+        run: terraform validate -var-file="terraform.tfvars"
         working-directory: ./resource_group
 
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -var-file="terraform.tfvars"
         working-directory: ./resource_group
 
-      - name: Terraform Apply
+      - name: Terraform Apply -var-file="terraform.tfvars"
+        run: terraform apply --auto-approve
+        working-directory: ./resource_group
+
+# Prod_deploy
+  Prod_deploy:
+    needs: Dev_deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Terraform Install
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "latest"
+      
+      - name: Terraform Init
+        run: |
+           terraform init \
+           -backend-config="resource_group_name=${{ env.RESOURCE_GROUP }}" \
+           -backend-config="storage_account_name=${{ env.STORAGE_ACCOUNT_NAME }}" \
+           -backend-config="container_name=${{ env.CONTAINER_NAME }}" \
+           -backend-config="key=${{ env.STATE_FILE }}"
+        working-directory: ./resource_group
+
+
+      - name: Terraform Validate
+        run: terraform validate -var-file="prod.tfvars"
+        working-directory: ./resource_group
+
+      - name: Terraform Plan
+        run: terraform plan -var-file="prod.tfvars"
+        working-directory: ./resource_group
+
+      - name: Terraform Apply -var-file="prod.tfvars"
+        run: terraform apply --auto-approve
+        working-directory: ./resource_group
+
+# Qa_deploy
+  Qa_deploy:
+    needs: Prod_deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Terraform Install
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "latest"
+      
+      - name: Terraform Init
+        run: |
+           terraform init \
+           -backend-config="resource_group_name=${{ env.RESOURCE_GROUP }}" \
+           -backend-config="storage_account_name=${{ env.STORAGE_ACCOUNT_NAME }}" \
+           -backend-config="container_name=${{ env.CONTAINER_NAME }}" \
+           -backend-config="key=${{ env.STATE_FILE }}"
+        working-directory: ./resource_group
+
+
+      - name: Terraform Validate
+        run: terraform validate -var-file="qa.tfvars"
+        working-directory: ./resource_group
+
+      - name: Terraform Plan
+        run: terraform plan -var-file="qa.tfvars"
+        working-directory: ./resource_group
+
+      - name: Terraform Apply -var-file="qa.tfvars"
         run: terraform apply --auto-approve
         working-directory: ./resource_group
