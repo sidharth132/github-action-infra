@@ -87,7 +87,7 @@ jobs:
 
 
       - name: Terraform Validate
-        run: terraform validate -var-file="prod.tfvars"
+        run: terraform validate 
         working-directory: ./resource_group
       
       - name: Terraform Plan
@@ -129,7 +129,7 @@ jobs:
 
 
       - name: Terraform Validate
-        run: terraform validate -var-file="qa.tfvars"
+        run: terraform validate 
         working-directory: ./resource_group
 
       - name: Terraform Plan
