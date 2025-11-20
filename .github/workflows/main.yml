@@ -89,14 +89,15 @@ jobs:
       - name: Terraform Validate
         run: terraform validate -var-file="prod.tfvars"
         working-directory: ./resource_group
-
+      
       - name: Terraform Plan
         run: terraform plan -var-file="prod.tfvars"
         working-directory: ./resource_group
-
-      - name: Terraform Apply -var-file="prod.tfvars"
-        run: terraform apply --auto-approve
+      
+      - name: Terraform Apply
+        run: terraform apply -var-file="prod.tfvars" --auto-approve
         working-directory: ./resource_group
+
 
 # Qa_deploy
   Qa_deploy:
