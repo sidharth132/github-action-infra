@@ -46,7 +46,7 @@ jobs:
 
 
       - name: Terraform Validate
-        run: terraform validate -var-file="terraform.tfvars"
+        run: terraform validate 
         working-directory: ./resource_group
 
       - name: Terraform Plan
