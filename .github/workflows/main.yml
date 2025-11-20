@@ -45,9 +45,8 @@ jobs:
 
 
       - name: Terraform Validate
-        uses: tf-actions/validate@v1
-        with:
-          working-directory: ./resource_group
+        run: terraform validate
+        working-directory: ./resource_group
 
       - name: Terraform Plan
         run: terraform plan
